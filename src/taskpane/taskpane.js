@@ -4,33 +4,53 @@
  */
 
 /* global console, document, Excel, Office */
+import axios from "axios";
 
 Office.onReady((info) => {
   if (info.host === Office.HostType.Excel) {
+    if (!Office.context.requirements.isSetSupported("ExcelApi", "1.7")) {
+      console.log("Sorry. The tutorial add-in uses Excel.js APIs that are not available in your version of Office.");
+    }
+
+    // Assign event handlers and other initialization logic.
+    document.getElementById("download").onclick = download;
     document.getElementById("sideload-msg").style.display = "none";
     document.getElementById("app-body").style.display = "flex";
-    document.getElementById("run").onclick = run;
   }
 });
 
-export async function run() {
-  try {
-    await Excel.run(async (context) => {
-      /**
-       * Insert your Excel code here
-       */
-      const range = context.workbook.getSelectedRange();
+async function download() {
+  await Excel.run(async (context) => {
+    const res = await axios.get('http://localhost:4000');
+    const data = res.data;
+    const keys = Object.keys(data);
+    console.log(keys);
 
-      // Read the range address
-      range.load("address");
+    const currentWorksheet = context.workbook.worksheets.getActiveWorksheet();
+    const expensesTable = currentWorksheet.tables.add("A1:D1", true /*hasHeaders*/);
+    expensesTable.name = "ExpensesTable";
 
-      // Update the fill color
-      range.format.fill.color = "yellow";
+    expensesTable.getHeaderRowRange().values = [["Date", "Merchant", "Category", "Amount"]];
 
-      await context.sync();
-      console.log(`The range address was ${range.address}.`);
-    });
-  } catch (error) {
-    console.error(error);
-  }
+    expensesTable.rows.add(null /*add at the end*/, [
+      ["1/1/2017", "The Phone Company", "Communications", "120"],
+      ["1/2/2017", "Northwind Electric Cars", "Transportation", "142.33"],
+      ["1/5/2017", "Best For You Organics Company", "Groceries", "27.9"],
+      ["1/10/2017", "Coho Vineyard", "Restaurant", "33"],
+      ["1/11/2017", "Bellows College", "Education", "350.1"],
+      ["1/15/2017", "Trey Research", "Other", "135"],
+      ["1/15/2017", "Best For You Organics Company", "Groceries", "97.88"],
+    ]);
+
+    expensesTable.columns.getItemAt(3).getRange().numberFormat = [["\u20AC#,##0.00"]];
+    expensesTable.getRange().format.autofitColumns();
+    expensesTable.getRange().format.autofitRows();
+
+    await context.sync();
+  }).catch(function (error) {
+    console.log("Error: " + error);
+    if (error instanceof OfficeExtension.Error) {
+      console.log("Debug info: " + JSON.stringify(error.debugInfo));
+    }
+  });
 }
