@@ -5,6 +5,7 @@
 
 /* global console, document, Excel, Office */
 import axios from "axios";
+const baseUrl = "http://localhost:4000";
 
 Office.onReady((info) => {
   if (info.host === Office.HostType.Excel) {
@@ -16,7 +17,9 @@ Office.onReady((info) => {
     document.getElementById("download").onclick = download;
     document.getElementById("sideload-msg").style.display = "none";
     document.getElementById("app-body").style.display = "flex";
+
     loadEntities();
+    document.getElementById("entities").onchange = entitiesOnChange;
   }
 });
 
@@ -27,7 +30,7 @@ async function download() {
     range.delete(Excel.DeleteShiftDirection.up);
     context.sync();
 
-    const res = await axios.get("http://localhost:4000");
+    const res = await axios.get(baseUrl);
     const data = res.data;
     const keys = Object.keys(data[0]);
 
@@ -61,16 +64,24 @@ function numberToLetters(num) {
 }
 
 function loadEntities() {
-  const res = axios
-    .get("http://localhost:4000/entities")
+  const select = document.getElementById("entities");
+  axios
+    .get(baseUrl + "/entities")
     .then((res) => {
       const entities = res.data;
-      const select = document.getElementById("entities");
-      entities.forEach((entity) => {
-        const option = document.createElement('option');
-        option.text = entity.Entity;
-        select.add(option);
-      });
+      entities.forEach((entity) => select.add(new Option(entity.Entity)));
+      select.dispatchEvent(new Event('change'));
     })
     .catch(console.log);
+}
+
+function entitiesOnChange(e) {
+  const select = document.getElementById("tables");
+  select.innerHTML = "";
+  console.log("test");
+  axios.get(baseUrl + `/entities/${e.target.value}/tables`).then(res=>{
+    const tables = res.data;
+    console.log("test", tables);
+    tables.forEach(table => select.add(new Option(table.Table)));
+  });
 }
