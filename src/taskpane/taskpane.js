@@ -21,12 +21,16 @@ Office.onReady((info) => {
 
 async function download() {
   await Excel.run(async (context) => {
+    const sheet = context.workbook.worksheets.getActiveWorksheet();
+    const range = sheet.getRange('A1:KK20000');
+    range.delete(Excel.DeleteShiftDirection.up);
+    context.sync();
+
     const res = await axios.get('http://localhost:4000');
     const data = res.data;
     const keys = Object.keys(data[0]);
 
-    const currentWorksheet = context.workbook.worksheets.getActiveWorksheet();
-    const expensesTable = currentWorksheet.tables.add(`A1:${numberToLetters(keys.length - 1)}1`, true /*hasHeaders*/);
+    const expensesTable = sheet.tables.add(`A1:${numberToLetters(keys.length - 1)}1`, true /*hasHeaders*/);
     expensesTable.name = "ExpensesTable";
 
     expensesTable.getHeaderRowRange().values = [keys];
