@@ -26,8 +26,7 @@ async function download() {
     const keys = Object.keys(data[0]);
 
     const currentWorksheet = context.workbook.worksheets.getActiveWorksheet();
-    console.log(keys.length);
-    const expensesTable = currentWorksheet.tables.add("A1:F1", true /*hasHeaders*/);
+    const expensesTable = currentWorksheet.tables.add(`A1:${numberToLetters(keys.length - 1)}1`, true /*hasHeaders*/);
     expensesTable.name = "ExpensesTable";
 
     expensesTable.getHeaderRowRange().values = [keys];
@@ -44,4 +43,14 @@ async function download() {
       console.log("Debug info: " + JSON.stringify(error.debugInfo));
     }
   });
+}
+
+//0=A 25=Z
+function numberToLetters(num) {
+  let letters = ''
+  while (num >= 0) {
+      letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'[num % 26] + letters
+      num = Math.floor(num / 26) - 1
+  }
+  return letters
 }
