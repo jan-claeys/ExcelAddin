@@ -16,17 +16,18 @@ Office.onReady((info) => {
     document.getElementById("download").onclick = download;
     document.getElementById("sideload-msg").style.display = "none";
     document.getElementById("app-body").style.display = "flex";
+    loadEntities();
   }
 });
 
 async function download() {
   await Excel.run(async (context) => {
     const sheet = context.workbook.worksheets.getActiveWorksheet();
-    const range = sheet.getRange('A1:KK20000');
+    const range = sheet.getRange("A1:KK20000");
     range.delete(Excel.DeleteShiftDirection.up);
     context.sync();
 
-    const res = await axios.get('http://localhost:4000');
+    const res = await axios.get("http://localhost:4000");
     const data = res.data;
     const keys = Object.keys(data[0]);
 
@@ -51,10 +52,25 @@ async function download() {
 
 //0=A 25=Z
 function numberToLetters(num) {
-  let letters = ''
+  let letters = "";
   while (num >= 0) {
-      letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'[num % 26] + letters
-      num = Math.floor(num / 26) - 1
+    letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"[num % 26] + letters;
+    num = Math.floor(num / 26) - 1;
   }
-  return letters
+  return letters;
+}
+
+function loadEntities() {
+  const res = axios
+    .get("http://localhost:4000/entities")
+    .then((res) => {
+      const entities = res.data;
+      const select = document.getElementById("entities");
+      entities.forEach((entity) => {
+        const option = document.createElement('option');
+        option.text = entity.Entity;
+        select.add(option);
+      });
+    })
+    .catch(console.log);
 }
