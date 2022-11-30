@@ -30,7 +30,7 @@
           </GetStarted>
           <FunctionFile resid="Commands.Url"/>
           <ExtensionPoint xsi:type="PrimaryCommandSurface">
-            <OfficeTab id="TabHome">
+            <CustomTab id="TabHome">
               <Group id="CommandsGroup">
                 <Label resid="CommandsGroup.Label"/>
                 <Icon>
@@ -55,7 +55,9 @@
                   </Action>
                 </Control>
               </Group>
-            </OfficeTab>
+              <Label resid="CommandsGroup.Label"/>
+              <InsertAfter>TabHome</InsertAfter>
+            </CustomTab>
           </ExtensionPoint>
         </DesktopFormFactor>
       </Host>
