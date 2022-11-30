@@ -26,31 +26,42 @@ Office.onReady((info) => {
 async function download() {
   await Excel.run(async (context) => {
     const sheet = context.workbook.worksheets.getActiveWorksheet();
-    const range = sheet.getRange("A1:KK20000");
-    range.delete(Excel.DeleteShiftDirection.up);
-    context.sync();
 
-    const res = await axios.get(baseUrl);
-    const data = res.data;
-    const keys = Object.keys(data[0]);
+    clearSheet(sheet, context);
+    
+    const tableId = document.getElementById("tables").value;
 
-    const expensesTable = sheet.tables.add(`A1:${numberToLetters(keys.length - 1)}1`, true /*hasHeaders*/);
-    expensesTable.name = "ExpensesTable";
+    try {
+      const res = await axios.get(baseUrl + `/tables/${tableId}`);
+      const data = res.data;
+      const keys = Object.keys(data[0]);
 
-    expensesTable.getHeaderRowRange().values = [keys];
-    expensesTable.rows.add(null /*add at the end*/, data.map(Object.values));
+      const expensesTable = sheet.tables.add(`A1:${numberToLetters(keys.length - 1)}1`, true /*hasHeaders*/);
+      expensesTable.name = "ExpensesTable";
 
-    expensesTable.columns.getItemAt(3).getRange().numberFormat = [["\u20AC#,##0.00"]];
-    expensesTable.getRange().format.autofitColumns();
-    expensesTable.getRange().format.autofitRows();
+      expensesTable.getHeaderRowRange().values = [keys];
+      expensesTable.rows.add(null /*add at the end*/, data.map(Object.values));
 
-    await context.sync();
+      expensesTable.columns.getItemAt(3).getRange().numberFormat = [["\u20AC#,##0.00"]];
+      expensesTable.getRange().format.autofitColumns();
+      expensesTable.getRange().format.autofitRows();
+
+      await context.sync();
+    } catch (error) {
+      console.log(error);
+    }
   }).catch(function (error) {
     console.log("Error: " + error);
     if (error instanceof OfficeExtension.Error) {
       console.log("Debug info: " + JSON.stringify(error.debugInfo));
     }
   });
+}
+
+function clearSheet(sheet, context){
+  const range = sheet.getRange("A1:KK20000");
+  range.delete(Excel.DeleteShiftDirection.up);
+  context.sync();
 }
 
 //0=A 25=Z
@@ -69,8 +80,8 @@ function loadEntities() {
     .get(baseUrl + "/entities")
     .then((res) => {
       const entities = res.data;
-      entities.forEach((entity) => select.add(new Option(entity.Entity)));
-      select.dispatchEvent(new Event('change'));
+      entities.forEach((entity) => select.add(new Option(entity.Entity, entity.Entity)));
+      select.dispatchEvent(new Event("change"));
     })
     .catch(console.log);
 }
@@ -78,10 +89,11 @@ function loadEntities() {
 function entitiesOnChange(e) {
   const select = document.getElementById("tables");
   select.innerHTML = "";
-  console.log("test");
-  axios.get(baseUrl + `/entities/${e.target.value}/tables`).then(res=>{
-    const tables = res.data;
-    console.log("test", tables);
-    tables.forEach(table => select.add(new Option(table.Table)));
-  });
+  axios
+    .get(baseUrl + `/entities/${e.target.value}/tables`)
+    .then((res) => {
+      const tables = res.data;
+      tables.forEach((table) => select.add(new Option(table.Table, table.ID)));
+    })
+    .catch(console.log);
 }
