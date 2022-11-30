@@ -15,8 +15,6 @@ Office.onReady((info) => {
 
     // Assign event handlers and other initialization logic.
     document.getElementById("download").onclick = download;
-    document.getElementById("sideload-msg").style.display = "none";
-    document.getElementById("app-body").style.display = "flex";
 
     loadEntities();
     document.getElementById("entities").onchange = entitiesOnChange;
