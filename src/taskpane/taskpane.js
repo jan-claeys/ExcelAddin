@@ -44,6 +44,8 @@ async function download() {
       expensesTable.getRange().format.autofitColumns();
       expensesTable.getRange().format.autofitRows();
 
+      expensesTable.onChanged.add(onTableChanged);
+
       await context.sync();
     } catch (error) {
       console.log(error);
@@ -53,6 +55,16 @@ async function download() {
     if (error instanceof OfficeExtension.Error) {
       console.log("Debug info: " + JSON.stringify(error.debugInfo));
     }
+  });
+}
+
+async function onTableChanged(eventArgs){
+  await Excel.run(async(context)=>{
+    const range = eventArgs.getRange(context);
+
+    range.format.fill.color = "#ffff00";
+    
+    await context.sync();
   });
 }
 
