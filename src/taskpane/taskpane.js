@@ -5,7 +5,9 @@
 
 /* global console, document, Excel, Office */
 import axios from "axios";
+
 const baseUrl = "http://localhost:4000";
+let newValues = [];
 
 Office.onReady((info) => {
   if (info.host === Office.HostType.Excel) {
@@ -13,6 +15,9 @@ Office.onReady((info) => {
       console.log("Sorry. The tutorial add-in uses Excel.js APIs that are not available in your version of Office.");
     }
 
+    if(sessionStorage.getItem("newValues")){
+      newValues = JSON.parse(sessionStorage.getItem("newValues"));
+    }
     // Assign event handlers and other initialization logic.
     document.getElementById("download").onclick = download;
 
@@ -63,7 +68,11 @@ async function onTableChanged(eventArgs){
     const range = eventArgs.getRange(context);
 
     range.format.fill.color = "#ffff00";
-    
+
+    newValues.add(eventArgs.details.valueBefore);
+
+    sessionStorage.setItem("newValues", json.stringify(newValues));
+
     await context.sync();
   });
 }
