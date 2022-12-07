@@ -54,7 +54,7 @@
                     <SourceLocation resid="Taskpane.Url" />
                   </Action>
                 </Control>
-                <!-- <Control xsi:type="Button" id="PublishButton">
+                <Control xsi:type="Button" id="PublishButton">
                   <Label resid="PublishButton.Label" />
                   <Supertip>
                     <Title resid="PublishButton.Label" />
@@ -69,7 +69,7 @@
                     <TaskpaneId>ButtonId1</TaskpaneId>
                     <SourceLocation resid="Taskpane.Url" />
                   </Action>
-                </Control> -->
+                </Control>
               </Group>
               <Label resid="CommandsGroup.Label" />
               <InsertAfter>TabHome</InsertAfter>
