@@ -4,6 +4,9 @@
  */
 
 /* global global, Office, self, window */
+import axios from "axios";
+
+const baseUrl = "http://localhost:4000";
 
 Office.onReady(() => {
   // If needed, Office.js is ready to be called
@@ -28,17 +31,43 @@ function action(event) {
   event.completed();
 }
 
+async function publish(args) {
+  await Excel.run(async (context) => {
+      const newValues = localStorage.getItem("newValues");
+      const tableId = localStorage.getItem("tableId");
+
+      try {
+        axios.post(baseUrl + `/tables/${tableId}`, {
+          newValues
+        })
+      } catch (error) {
+        throw error;
+      }
+
+      await context.sync();
+    })
+    .catch(function (error) {
+      console.log("Error: " + error);
+      if (error instanceof OfficeExtension.Error) {
+        console.log("Debug info: " + JSON.stringify(error.debugInfo));
+      }
+    });
+  args.completed();
+}
+
 function getGlobal() {
-  return typeof self !== "undefined"
-    ? self
-    : typeof window !== "undefined"
-    ? window
-    : typeof global !== "undefined"
-    ? global
-    : undefined;
+  return typeof self !== "undefined" ?
+    self :
+    typeof window !== "undefined" ?
+    window :
+    typeof global !== "undefined" ?
+    global :
+    undefined;
 }
 
 const g = getGlobal();
 
 // The add-in command functions need to be available in global scope
 g.action = action;
+
+Office.actions.associate("publish", publish);

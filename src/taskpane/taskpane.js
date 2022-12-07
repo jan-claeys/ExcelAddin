@@ -36,6 +36,8 @@ async function download() {
 
     const tableId = document.getElementById("tables").value;
 
+    localStorage.setItem(tableId, "tableId");
+
     try {
       const res = await axios.get(baseUrl + `/tables/${tableId}`);
       const data = res.data;
@@ -64,7 +66,7 @@ async function download() {
 
       await context.sync();
     } catch (error) {
-      console.log(error);
+      throw error;
     }
   }).catch(function (error) {
     console.log("Error: " + error);
@@ -83,7 +85,7 @@ async function onTableChanged(eventArgs) {
 
     range.format.fill.color = "#ffff00";
 
-    const row = table.rows.getItemAt(parseInt(eventArgs.address.charAt(1))).load("values");
+    const row = table.rows.getItemAt(parseInt(eventArgs.address.charAt(1)) - 2).load("values");
     await context.sync();
     const rowValues = row.values;
 
@@ -103,6 +105,7 @@ function clearSheet(sheet, context) {
   range.delete(Excel.DeleteShiftDirection.up);
 
   localStorage.removeItem("newValues");
+  newValues = [];
   context.sync();
 }
 
