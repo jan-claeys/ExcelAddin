@@ -36,7 +36,7 @@ async function download() {
 
     const tableId = document.getElementById("tables").value;
 
-    localStorage.setItem(tableId, "tableId");
+    localStorage.setItem("tableId", tableId);
 
     try {
       const res = await axios.get(baseUrl + `/tables/${tableId}`);
@@ -86,12 +86,16 @@ async function onTableChanged(eventArgs) {
     range.format.fill.color = "#ffff00";
 
     const row = table.rows.getItemAt(parseInt(eventArgs.address.charAt(1)) - 2).load("values");
+    let headerRange = table.getHeaderRowRange().load("values");
+
     await context.sync();
     const rowValues = row.values;
+    const headers = headerRange.values;
 
     newValues.push({
       code: rowValues[0][0],
-      value: eventArgs.details.valueAfter
+      value: eventArgs.details.valueAfter,
+      header: headers
     });
 
     localStorage.setItem("newValues", JSON.stringify(newValues));
