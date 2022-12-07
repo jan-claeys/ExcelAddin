@@ -15,8 +15,8 @@ Office.onReady((info) => {
       console.log("Sorry. The tutorial add-in uses Excel.js APIs that are not available in your version of Office.");
     }
 
-    if(sessionStorage.getItem("newValues")){
-      newValues = JSON.parse(sessionStorage.getItem("newValues"));
+    if (localStorage.getItem("newValues")) {
+      newValues = JSON.parse(localStorage.getItem("newValues"));
     }
     // Assign event handlers and other initialization logic.
     document.getElementById("download").onclick = download;
@@ -28,10 +28,12 @@ Office.onReady((info) => {
 
 async function download() {
   await Excel.run(async (context) => {
+
+
     const sheet = context.workbook.worksheets.getActiveWorksheet();
 
     clearSheet(sheet, context);
-    
+
     const tableId = document.getElementById("tables").value;
 
     try {
@@ -39,17 +41,26 @@ async function download() {
       const data = res.data;
       const keys = Object.keys(data[0]);
 
-      const expensesTable = sheet.tables.add(`A1:${numberToLetters(keys.length - 1)}1`, true /*hasHeaders*/);
-      expensesTable.name = "ExpensesTable";
+      const table = sheet.tables.add(`A1:${numberToLetters(keys.length - 1)}1`, true /*hasHeaders*/ );
+      table.name = "table";
 
-      expensesTable.getHeaderRowRange().values = [keys];
-      expensesTable.rows.add(null /*add at the end*/, data.map(Object.values));
+      table.getHeaderRowRange().values = [keys];
+      table.rows.add(null /*add at the end*/ , data.map(Object.values));
 
-      expensesTable.columns.getItemAt(3).getRange().numberFormat = [["\u20AC#,##0.00"]];
-      expensesTable.getRange().format.autofitColumns();
-      expensesTable.getRange().format.autofitRows();
+      table.columns.getItemAt(3).getRange().numberFormat = [
+        ["\u20AC#,##0.00"]
+      ];
+      table.getRange().format.autofitColumns();
+      table.getRange().format.autofitRows();
 
-      expensesTable.onChanged.add(onTableChanged);
+      table.onChanged.add(onTableChanged);
+
+      const row = table.rows.getItemAt(2).load("values");
+
+      await context.sync();
+      const rowValues = row.values;
+
+      console.log(rowValues);
 
       await context.sync();
     } catch (error) {
@@ -63,23 +74,35 @@ async function download() {
   });
 }
 
-async function onTableChanged(eventArgs){
-  await Excel.run(async(context)=>{
+async function onTableChanged(eventArgs) {
+  await Excel.run(async (context) => {
+    const sheet = context.workbook.worksheets.getActiveWorksheet();
+    const table = sheet.tables.getItem("table");
+
     const range = eventArgs.getRange(context);
 
     range.format.fill.color = "#ffff00";
 
-    newValues.add(eventArgs.details.valueBefore);
+    const row = table.rows.getItemAt(parseInt(eventArgs.address.charAt(1))).load("values");
+    await context.sync();
+    const rowValues = row.values;
 
-    sessionStorage.setItem("newValues", json.stringify(newValues));
+    newValues.push({
+      code: rowValues[0][0],
+      value: eventArgs.details.valueAfter
+    });
+
+    localStorage.setItem("newValues", JSON.stringify(newValues));
 
     await context.sync();
   });
 }
 
-function clearSheet(sheet, context){
+function clearSheet(sheet, context) {
   const range = sheet.getRange("A1:KK20000");
   range.delete(Excel.DeleteShiftDirection.up);
+
+  localStorage.removeItem("newValues");
   context.sync();
 }
 
@@ -87,7 +110,7 @@ function clearSheet(sheet, context){
 function numberToLetters(num) {
   let letters = "";
   while (num >= 0) {
-    letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"[num % 26] + letters;
+    letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ" [num % 26] + letters;
     num = Math.floor(num / 26) - 1;
   }
   return letters;
