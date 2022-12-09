@@ -43,7 +43,7 @@ async function download() {
       const data = res.data;
       const keys = Object.keys(data[0]);
 
-      const table = sheet.tables.add(`A1:${numberToLetters(keys.length - 1)}1`, true /*hasHeaders*/ );
+      const table = sheet.tables.add(`A1:${indexToLetters(keys.length - 1)}1`, true /*hasHeaders*/ );
       table.name = "table";
 
       table.getHeaderRowRange().values = [keys];
@@ -86,16 +86,18 @@ async function onTableChanged(eventArgs) {
     range.format.fill.color = "#ffff00";
 
     const row = table.rows.getItemAt(parseInt(eventArgs.address.charAt(1)) - 2).load("values");
-    let headerRange = table.getHeaderRowRange().load("values");
+    let headers = table.getHeaderRowRange().load("values");
+
+    const columnIndex = letterToIndex(eventArgs.address.charAt(0));
 
     await context.sync();
     const rowValues = row.values;
-    const headers = headerRange.values;
+    const headersValue = headers.values;
 
     newValues.push({
       code: rowValues[0][0],
       value: eventArgs.details.valueAfter,
-      header: headers
+      header: headersValue[0][columnIndex - 1].replace(" (u)", "")
     });
 
     localStorage.setItem("newValues", JSON.stringify(newValues));
@@ -114,13 +116,25 @@ function clearSheet(sheet, context) {
 }
 
 //0=A 25=Z
-function numberToLetters(num) {
+function indexToLetters(num) {
   let letters = "";
   while (num >= 0) {
     letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ" [num % 26] + letters;
     num = Math.floor(num / 26) - 1;
   }
   return letters;
+}
+
+// A=1 Z=26
+function letterToIndex(letter) {
+  let index = 0;
+  for (let i = 0; i < letter.length; i++) {
+    let value = letter.charCodeAt(i) - 64;
+
+    index = index * 26 + value;
+  }
+
+  return index;
 }
 
 function loadEntities() {
