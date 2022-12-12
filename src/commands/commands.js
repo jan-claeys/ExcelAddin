@@ -33,13 +33,16 @@ function action(event) {
 
 async function publish(args) {
   await Excel.run(async (context) => {
-      const newValues = localStorage.getItem("newValues");
+      const newValues = JSON.parse(localStorage.getItem("newValues"));
       const tableId = localStorage.getItem("tableId");
-
+      console.log("publish");
       try {
-        axios.post(baseUrl + `/tables/${tableId}`, {
+        res = await axios.post(baseUrl + `/tables/${tableId}`, {
           newValues
         })
+
+        localStorage.setItem('newValues', '');
+
       } catch (error) {
         throw error;
       }

@@ -57,13 +57,6 @@ async function download() {
 
       table.onChanged.add(onTableChanged);
 
-      const row = table.rows.getItemAt(2).load("values");
-
-      await context.sync();
-      const rowValues = row.values;
-
-      console.log(rowValues);
-
       await context.sync();
     } catch (error) {
       throw error;
@@ -96,8 +89,9 @@ async function onTableChanged(eventArgs) {
 
     newValues.push({
       code: rowValues[0][0],
+      table: localStorage.getItem("tableId"),
       value: eventArgs.details.valueAfter,
-      header: headersValue[0][columnIndex - 1].replace(" (u)", "")
+      column: headersValue[0][columnIndex - 1].replace(" (u)", "")
     });
 
     localStorage.setItem("newValues", JSON.stringify(newValues));
