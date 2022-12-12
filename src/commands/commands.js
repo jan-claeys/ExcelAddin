@@ -42,6 +42,7 @@ async function publish(args) {
         })
 
         localStorage.setItem('newValues', '');
+        download();
 
       } catch (error) {
         throw error;
