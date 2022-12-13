@@ -6,7 +6,7 @@
 /* global console, document, Excel, Office */
 import axios from "axios";
 
-const baseUrl = "http://localhost:4000";
+const baseUrl = API_URL;
 let newValues = [];
 
 Office.onReady((info) => {

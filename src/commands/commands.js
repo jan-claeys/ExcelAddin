@@ -6,7 +6,7 @@
 /* global global, Office, self, window */
 import axios from "axios";
 
-const baseUrl = "http://localhost:4000";
+const baseUrl = API_URL;
 
 Office.onReady(() => {
   // If needed, Office.js is ready to be called

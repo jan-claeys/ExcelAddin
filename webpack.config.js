@@ -1,11 +1,16 @@
 /* eslint-disable no-undef */
-
+const webpack = require('webpack');
 const devCerts = require("office-addin-dev-certs");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 
 const urlDev = "https://localhost:3000/";
 const urlProd = "https://jan-claeys.github.io/exceladdin/Addin/dist/"; // CHANGE THIS TO YOUR PRODUCTION DEPLOYMENT LOCATION
+
+var API_URL = {
+  production: JSON.stringify('https://exceladdinserver.azurewebsites.net'),
+  development: JSON.stringify('http://localhost:4000')
+}
 
 async function getHttpsOptions() {
   const httpsOptions = await devCerts.getHttpsServerOptions();
@@ -18,6 +23,8 @@ async function getHttpsOptions() {
 
 module.exports = async (env, options) => {
   const dev = options.mode === "development";
+  const environment = dev ? 'development' : 'production';
+
   const config = {
     devtool: "source-map",
     entry: {
@@ -72,13 +79,20 @@ module.exports = async (env, options) => {
                 return content.toString().replace(new RegExp(urlDev, "g"), urlProd);
               }
             },
-          },
+          }
         ],
+      }),
+      new webpack.DefinePlugin({
+        'API_URL': API_URL[environment]
       }),
       new HtmlWebpackPlugin({
         filename: "taskpane.html",
         template: "./src/taskpane/taskpane.html",
         chunks: ["polyfill", "taskpane", "commands", "functions"]
+      }),
+      new HtmlWebpackPlugin({
+        filename: "index.html",
+        template: "./src/index.html"
       })
     ],
     devServer: {
