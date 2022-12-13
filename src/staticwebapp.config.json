@@ -1,7 +1,7 @@
 {
   "routes": [
     {
-      "route": "/takpane",
+      "route": "/taskpane",
       "allowedRoles": ["anonymous"]
     },
     {
@@ -13,21 +13,6 @@
       "allowedRoles": ["anonymous"]
     }
   ],
-  "responseOverrides": {
-    "400": {
-      "rewrite": "/"
-    },
-    "401": {
-      "redirect": "/login",
-      "statusCode": 302
-    },
-    "403": {
-      "rewrite": "/"
-    },
-    "404": {
-      "rewrite": "/index.html"
-    }
-  },
   "globalHeaders": {
     "Content-Type": "charset=UTF-8",
     "content-security-policy": "default-src https: 'self'; object-src 'none'; frame-src 'self'; img-src 'self'",
