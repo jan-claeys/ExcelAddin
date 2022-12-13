@@ -93,6 +93,10 @@ module.exports = async (env, options) => {
         filename: "index.html",
         template: "./src/index.html"
       }),
+      new HtmlWebpackPlugin({
+        filename: "index.html",
+        template: "./src/index.html"
+      })
     ],
     devServer: {
       headers: {
