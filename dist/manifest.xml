@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<OfficeApp xmlns="http://schemas.microsoft.com/office/appforoffice/1.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bt="http://schemas.microsoft.com/office/officeappbasictypes/1.0" xmlns:ov="http://schemas.microsoft.com/office/taskpaneappversionoverrides" xsi:type="TaskPaneApp">
+  <Id>2766459a-e548-45e7-91ac-1f21462a5e98</Id>
+  <Version>1.0.0.0</Version>
+  <ProviderName>Tillit</ProviderName>
+  <DefaultLocale>en-US</DefaultLocale>
+  <DisplayName DefaultValue="Datashaper" />
+  <Description DefaultValue="A template to get started." />
+  <IconUrl DefaultValue="https://jan-claeys.github.io/exceladdin/Addin/dist/assets/icon-32.png" />
+  <HighResolutionIconUrl DefaultValue="https://jan-claeys.github.io/exceladdin/Addin/dist/assets/icon-64.png" />
+  <SupportUrl DefaultValue="https://tillit.be" />
+  <AppDomains>
+    <AppDomain>https://tillit.be</AppDomain>
+  </AppDomains>
+  <Hosts>
+    <Host Name="Workbook" />
+  </Hosts>
+  <Requirements>
+    <Sets DefaultMinVersion="1.1">
+      <Set Name="SharedRuntime" MinVersion="1.1" />
+    </Sets>
+  </Requirements>
+  <DefaultSettings>
+    <SourceLocation DefaultValue="https://jan-claeys.github.io/exceladdin/Addin/dist/taskpane.html" />
+  </DefaultSettings>
+  <Permissions>ReadWriteDocument</Permissions>
+  <VersionOverrides xmlns="http://schemas.microsoft.com/office/taskpaneappversionoverrides" xsi:type="VersionOverridesV1_0">
+    <Hosts>
+      <Host xsi:type="Workbook">
+        <Runtimes>
+          <Runtime resid="Taskpane.Url" lifetime="long" />
+        </Runtimes>
+        <DesktopFormFactor>
+          <GetStarted>
+            <Title resid="GetStarted.Title" />
+            <Description resid="GetStarted.Description" />
+            <LearnMoreUrl resid="GetStarted.LearnMoreUrl" />
+          </GetStarted>
+          <FunctionFile resid="Taskpane.Url" />
+          <ExtensionPoint xsi:type="PrimaryCommandSurface">
+            <CustomTab id="TabHome">
+              <Group id="CommandsGroup">
+                <Label resid="CommandsGroup.Label" />
+                <Icon>
+                  <bt:Image size="16" resid="DownloadIcon.16x16" />
+                  <bt:Image size="32" resid="DownloadIcon.32x32" />
+                  <bt:Image size="80" resid="DownloadIcon.80x80" />
+                </Icon>
+                <Control xsi:type="Button" id="DownloadButton">
+                  <Label resid="DownloadButton.Label" />
+                  <Supertip>
+                    <Title resid="DownloadButton.Label" />
+                    <Description resid="DownloadButton.Tooltip" />
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="DownloadIcon.16x16" />
+                    <bt:Image size="32" resid="DownloadIcon.32x32" />
+                    <bt:Image size="80" resid="DownloadIcon.80x80" />
+                  </Icon>
+                  <Action xsi:type="ShowTaskpane">
+                    <TaskpaneId>ButtonId1</TaskpaneId>
+                    <SourceLocation resid="Taskpane.Url" />
+                  </Action>
+                </Control>
+                <Control xsi:type="Button" id="PublishButton">
+                  <Label resid="PublishButton.Label" />
+                  <Supertip>
+                    <Title resid="PublishButton.Label" />
+                    <Description resid="PublishButton.Tooltip" />
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="PublishIcon.16x16" />
+                    <bt:Image size="32" resid="PublishIcon.32x32" />
+                    <bt:Image size="80" resid="PublishIcon.80x80" />
+                  </Icon>
+                  <Action xsi:type="ExecuteFunction">
+                    <FunctionName>publish</FunctionName>
+                  </Action>
+                </Control>
+              </Group>
+              <Label resid="CommandsGroup.Label" />
+              <InsertAfter>TabHome</InsertAfter>
+            </CustomTab>
+          </ExtensionPoint>
+        </DesktopFormFactor>
+      </Host>
+    </Hosts>
+    <Resources>
+      <bt:Images>
+        <bt:Image id="DownloadIcon.16x16" DefaultValue="https://jan-claeys.github.io/exceladdin/Addin/dist/assets/download.png" />
+        <bt:Image id="DownloadIcon.32x32" DefaultValue="https://jan-claeys.github.io/exceladdin/Addin/dist/assets/download.png" />
+        <bt:Image id="DownloadIcon.80x80" DefaultValue="https://jan-claeys.github.io/exceladdin/Addin/dist/assets/download.png" />
+        <bt:Image id="PublishIcon.16x16" DefaultValue="https://jan-claeys.github.io/exceladdin/Addin/dist/assets/publish.png" />
+        <bt:Image id="PublishIcon.32x32" DefaultValue="https://jan-claeys.github.io/exceladdin/Addin/dist/assets/publish.png" />
+        <bt:Image id="PublishIcon.80x80" DefaultValue="https://jan-claeys.github.io/exceladdin/Addin/dist/assets/publish.png" />
+      </bt:Images>
+      <bt:Urls>
+        <bt:Url id="GetStarted.LearnMoreUrl" DefaultValue="https://go.microsoft.com/fwlink/?LinkId=276812" />
+        <bt:Url id="Commands.Url" DefaultValue="https://jan-claeys.github.io/exceladdin/Addin/dist/commands.html" />
+        <bt:Url id="Taskpane.Url" DefaultValue="https://jan-claeys.github.io/exceladdin/Addin/dist/taskpane.html" />
+      </bt:Urls>
+      <bt:ShortStrings>
+        <bt:String id="GetStarted.Title" DefaultValue="Get started with your sample add-in!" />
+        <bt:String id="CommandsGroup.Label" DefaultValue="Datashaper" />
+        <bt:String id="DownloadButton.Label" DefaultValue="Download" />
+        <bt:String id="PublishButton.Label" DefaultValue="Publish" />
+      </bt:ShortStrings>
+      <bt:LongStrings>
+        <bt:String id="GetStarted.Description" DefaultValue="Your sample add-in loaded succesfully. Go to the HOME tab and click the 'Show Taskpane' button to get started." />
+        <bt:String id="DownloadButton.Tooltip" DefaultValue="Click to download a table" />
+        <bt:String id="PublishButton.Tooltip" DefaultValue="Click to publish your changes" />
+      </bt:LongStrings>
+    </Resources>
+  </VersionOverrides>
+</OfficeApp>
