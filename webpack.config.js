@@ -5,7 +5,7 @@ const CopyWebpackPlugin = require("copy-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 
 const urlDev = "https://localhost:3000/";
-const urlProd = "https://jan-claeys.github.io/exceladdin/Addin/dist/"; // CHANGE THIS TO YOUR PRODUCTION DEPLOYMENT LOCATION
+const urlProd = "https://jan-claeys.github.io/ExcelAddin/dist/"; // CHANGE THIS TO YOUR PRODUCTION DEPLOYMENT LOCATION
 
 var API_URL = {
   production: JSON.stringify('https://exceladdinserver.azurewebsites.net'),
